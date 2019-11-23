@@ -5,6 +5,7 @@
             <div class="col-sm-10">
                 <h1>Books</h1>
                 <hr><br><br>
+                <alert :message="message" v-if="showMessage"></alert>
                 <button type="button" class="btn btn-success btn-sm" v-b-modal.book-modal>Add Books</button>
                 <br><br>
                 <table class="table table-hover">
@@ -58,6 +59,8 @@
 
 <script>
 import axios from 'axios';
+import Alert from './Alert.vue';
+
 
 export default {
   data() {
@@ -69,6 +72,9 @@ export default {
         read: [],
       },
     };
+  },
+  components: {
+    alert: Alert,
   },
   methods: {
     getBooks() {
@@ -87,10 +93,13 @@ export default {
       axios.post(path, payload)
         .then(() => {
           this.getBooks();
+          this.message = 'Book added!';
+          this.showMessage = true;
         })
         .catch((error) => {
           console.log(error);
           this.getBooks();
+          this.showMessage = error;
         });
     },
     initForm() {
@@ -115,6 +124,18 @@ export default {
       evt.preventDefault();
       this.$refs.addBookModal.hide();
       this.initForm();
+    },
+    data() {
+      return {
+        books: [],
+        addBookForm: {
+          title: '',
+          author: '',
+          read: [],
+        },
+        message: '',
+        showMessage: false,
+      };
     },
   },
   created() {
