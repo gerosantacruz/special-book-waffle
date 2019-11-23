@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import uuid
 
 
 # configuration
@@ -35,6 +36,7 @@ def all_books():
 
 BOOKS = [
     {
+        'id': uuid.uuid4().hex,
         'title': 'Don quijote de la mancha',
         'author': 'Cervantes',
         'read':True
