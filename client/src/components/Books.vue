@@ -5,7 +5,7 @@
             <div class="col-sm-10">
                 <h1>Books</h1>
                 <hr><br><br>
-                <button type="button" class="btn btn-success btn-sm">Add Books</button>
+                <button type="button" class="btn btn-success btn-sm" v-b-modal.book-modal>Add Books</button>
                 <br><br>
                 <table class="table table-hover">
                     <thead>
@@ -24,9 +24,9 @@
                                 <span v-else>No</span>
                             </td>
                             <td>
-                                <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-warning btn-sm">Update</button>
-                                    <button type="button" class="btn btn-danger btn-sm">Warnin</button>
+                                <div class="btn-toolbar" role="group">
+                                    <button type="button" class="btn btn-warning btn-sm btn-space">Update</button>
+                                    <button type="button" class="btn btn-danger btn-sm ">Delete</button>
                                 </div>
                             </td>
                         </tr>
@@ -48,8 +48,8 @@
               <b-form-checkbox-group v-model="addBookForm.read" id="form-checks">
                 <b-form-checkbox value="true">Read?</b-form-checkbox>
               </b-form-checkbox-group>
-              <b-button type="submit" variant="primary">Submit</b-button>
-              <b-button type="reset" variant="danger">Reset</b-button>
+              <b-button type="submit" variant="primary" class="btn btn-space">Submit</b-button>
+              <b-button type="reset" variant="danger" class="btn btn-space">Reset</b-button>
             </b-form-group>
           </b-form>
         </b-modal>
@@ -63,6 +63,11 @@ export default {
   data() {
     return {
       books: [],
+      addBookForm: {
+        title: '',
+        author: '',
+        read: [],
+      },
     };
   },
   methods: {
@@ -76,6 +81,40 @@ export default {
           // esLint-disable-next-line
           console.error(error);
         });
+    },
+    addBook(payload) {
+      const path = 'http://localhost:5000/books';
+      axios.post(path, payload)
+        .then(() => {
+          this.getBooks();
+        })
+        .catch((error) => {
+          console.log(error);
+          this.getBooks();
+        });
+    },
+    initForm() {
+      this.addBookForm.title = '';
+      this.addBookForm.author = '';
+      this.addBookForm.read = [];
+    },
+    onSubmit(evt) {
+      evt.preventDefault();
+      this.$refs.addBookModal.hide();
+      let read = false;
+      if (this.addBookForm.read[0]) read = true;
+      const payload = {
+        title: this.addBookForm.title,
+        author: this.addBookForm.author,
+        read,
+      };
+      this.addBook(payload);
+      this.initForm();
+    },
+    onReset(evt) {
+      evt.preventDefault();
+      this.$refs.addBookModal.hide();
+      this.initForm();
     },
   },
   created() {
