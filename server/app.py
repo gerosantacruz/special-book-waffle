@@ -35,7 +35,8 @@ def all_books():
         response_object['books'] = BOOKS
     return jsonify(response_object)
 
-@app.route('/books/<book_id>', methods=['PUT'])
+
+@app.route('/books/<book_id>', methods=['PUT', 'DELETE'])
 def single_book(book_id):
     response_object = {'status': 'success'}
     if request.method == 'PUT':
@@ -47,16 +48,21 @@ def single_book(book_id):
             'author': post_data.get('author'),
             'read': post_data.get('read')
         })
-        response_object['message'] = 'Book Updated!'
+        response_object['message'] = 'Book updated!'
+    if request.method == 'DELETE':
+        remove_book(book_id)
+        response_object['message'] = 'Book removed!'
     return jsonify(response_object)
+
+
 def remove_book(book_id):
     for book in BOOKS:
         if book['id'] == book_id:
             BOOKS.remove(book)
             return True
-        else:
-            return False
     return False
+
+
 BOOKS = [
     {
         'id': uuid.uuid4().hex,
@@ -65,11 +71,13 @@ BOOKS = [
         'read':True
     },
     {
+        'id': uuid.uuid4().hex,
         'title': 'La Iliada',
         'author': 'Homero',
         'read':True
     },
     {
+        'id': uuid.uuid4().hex,
         'title': 'El arte de la guerra',
         'author': 'Sun Tzu',
         'read':True
